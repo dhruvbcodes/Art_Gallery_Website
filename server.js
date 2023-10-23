@@ -1,5 +1,6 @@
 require('dotenv').config();
-const express = require('express'); 
+const express = require('express');
+const multer = require('multer'); 
 const app = express();
 const { logger,logEvents } = require('./middleware/logger');
 const errorHandler = require('./middleware/errorHandler');
@@ -20,12 +21,14 @@ app.use(express.json()); // parses incoming requests with JSON payloads
 
 app.use(express.static(path.join(__dirname, 'public'))); // for static files - css
 
+
+
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
 app.use('/artists', require('./routes/artistRoute'));
-//app.use('/arts', require('./routes/artRoute'));
+app.use('/arts', require('./routes/artRoute'));
 
 app.all('*', (req, res) => {
     res.status(404)

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Artist = require('./Artist');
 
 const ArtSchema = new mongoose.Schema({
     title: {
@@ -10,8 +11,8 @@ const ArtSchema = new mongoose.Schema({
         required: true,
         ref: 'Artist'
     },
-    photoUrl: {
-        type: String,
+    photo: {
+        type: Buffer,
         required: false
     }
     },

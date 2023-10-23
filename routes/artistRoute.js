@@ -8,8 +8,7 @@ router.route('/')
 
 router.route('/:username')
     .get(artistController.index)
-    //.post(artistController.create)
-    //.patch(artistController.update)
-    //.delete(artistController.delete)
+    .patch(artistController.update)
+    .delete(artistController.deleteartist)
 
 module.exports = router

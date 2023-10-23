@@ -4,9 +4,9 @@ const artController = require('../controllers/artController')
 
 router.route('/')
     .get(artController.getAll)
-    
-router.route('/:id')
-    .get(artController.index)
     .post(artController.create)
-    .patch(artController.update)
-    .delete(artController.delete)
+
+router.route('/:username')
+    .get(artController.index)
+
+module.exports = router
