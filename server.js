@@ -6,6 +6,7 @@ const { logger,logEvents } = require('./middleware/logger');
 const errorHandler = require('./middleware/errorHandler');
 const mongoose = require('mongoose');
 const connectDB = require('./config/db');
+const cookieParser = require('cookie-parser');
 //const cors = require('cors');
 const PORT = process.env.PORT || 3500;
 const path = require('path');
@@ -18,6 +19,8 @@ console.log(process.env.NODE_ENV); // logs the environment
 app.use(logger); // logs the request method and path to the console
 
 app.use(express.json()); // parses incoming requests with JSON payloads
+
+app.use(cookieParser()); // parses cookies
 
 app.use(express.static(path.join(__dirname, 'public'))); // for static files - css
 

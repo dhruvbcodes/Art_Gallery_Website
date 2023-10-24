@@ -8,5 +8,7 @@ router.route('/')
 
 router.route('/:username')
     .get(artController.index)
+    .patch(artController.update)
+    .delete(artController.deleteart)
 
 module.exports = router

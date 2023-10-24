@@ -30,7 +30,11 @@ const getAll = asyncHandler(async (req, res) => {
 // @access  Public
 const index = asyncHandler(async (req, res) => {
     const { username } = req.params;
-    const art = await Art.find({ username }).lean();
+    const artist = await Artist.findOne({ username }).lean().exec();
+    if(!artist) {
+        res.status(404).json({ message: 'Artist not found' });
+    }
+    const art = await Art.find({ artist: artist._id }).lean();
     if(!art) {
         res.status(404).json({ message: 'No art found' });
     }
@@ -44,16 +48,16 @@ const index = asyncHandler(async (req, res) => {
 // @access  Private
 const create = asyncHandler(async (req, res) => {
 
-    const { title, username } = req.body;
-
     upload.single('photo')(req, res, async (err) => {
         if (err) {
             return res.status(400).json({ message: 'Error uploading image' });
         }
 
-        const photo = req.buffer;
+        const { title, username } = req.body;
 
-        if (!title || !username) {
+        const photo = req.file.buffer;
+
+        if (!title || !username || !photo) {
             return res.status(400).json({ message: 'Please fill in all fields' });
         }
 
@@ -84,8 +88,85 @@ const create = asyncHandler(async (req, res) => {
 });
 
 
+// @desc    Update art
+// @route   PATCH /arts/:username
+// @access  Private
+const update = asyncHandler(async (req, res) => {
 
-module.exports = { getAll, index, create }
+    upload.single('photo')(req, res, async (err) => {
+        if (err) {
+            return res.status(400).json({ message: 'Error uploading image' });
+        }
+
+        const { title, username } = req.body;
+
+        const photo = req.file.buffer;
+
+        if (!title || !username || !photo) {
+            return res.status(400).json({ message: 'Please fill in all fields' });
+        }
+
+        const artist = await Artist.findOne({ username }).lean().exec();
+
+        if (!artist) {
+            return res.status(404).json({ message: 'Artist not found' });
+        }
+    
+        const duplicate = await Art.findOne({ title}).exec();
+
+        if (duplicate) {
+            return res.status(400).json({ message: 'Art already exists' });
+        }
+
+        const art = await Art.create({
+            title,
+            photo,
+            artist: artist._id,
+        });
+
+        if (!art) {
+            return res.status(404).json({ message: 'Not Created' });
+        } else {
+            return res.status(201).json(`Art ${art.title} created`);
+        }
+    });
+});
+
+
+//@desc   Delete art
+//@route  DELETE /arts/:username
+//@access Private
+const deleteart = asyncHandler(async (req, res) => {
+    
+    const { username } = req.params;
+    if (!username) {
+        return res.status(400).json({ message: 'Please fill in all fields' });
+    }
+
+    const artist = await Artist.findOne({ username }).lean().exec();
+
+    if (!artist) {
+        return res.status(404).json({ message: 'Artist not found' });
+    }
+
+    const art = await Art.findAll({ artist: artist._id }).lean();
+
+    if (!art) {
+        return res.status(404).json({ message: 'Art not found' });
+    }
+
+    const deletedart = await Art.deleteMany({ artist: artist._id }).exec();
+
+    if (!deletedart) {
+        return res.status(404).json({ message: 'Not deleted' });
+    }
+
+    return res.status(201).json(`Art ${art.title} deleted`);
+
+});
+
+
+module.exports = { getAll, index, create, update, deleteart}
 
 
 

@@ -13,7 +13,7 @@ const ArtSchema = new mongoose.Schema({
     },
     photo: {
         type: Buffer,
-        required: false
+        required: true
     }
     },
     {
